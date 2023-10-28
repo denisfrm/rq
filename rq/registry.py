@@ -34,10 +34,11 @@ class BaseRegistry(object):
     def add(self, job, ttl=0, pipeline=None):
         """Adds a job to a registry with expiry time of now + ttl."""
         score = ttl if ttl < 0 else current_timestamp() + ttl
+        mapping = {job.id: score}
         if pipeline is not None:
-            return pipeline.zadd(self.key, score, job.id)
+            return pipeline.zadd(self.key, mapping)
 
-        return self.connection._zadd(self.key, score, job.id)
+        return self.connection._zadd(self.key, mapping)
 
     def remove(self, job, pipeline=None):
         connection = pipeline if pipeline is not None else self.connection

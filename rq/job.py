@@ -20,6 +20,11 @@ try:
 except ImportError:  # noqa  # pragma: no cover
     import pickle
 
+try:
+    import pickle5
+except ImportError:
+    import pickle as pickle5
+
 # Serialize pickle dumps using the highest pickle protocol (binary, default
 # uses ascii)
 dumps = partial(pickle.dumps, protocol=pickle.HIGHEST_PROTOCOL)
@@ -48,11 +53,18 @@ def unpickle(pickled_string):
     potentially raises many types of exceptions (e.g. AttributeError,
     IndexError, TypeError, KeyError, etc.)
     """
+    global loads, dumps
     try:
-        obj = loads(pickled_string)
-    except Exception as e:
-        raise UnpickleError('Could not unpickle', pickled_string, e)
-    return obj
+        return loads(pickled_string)
+    except Exception:
+        dumps = partial(pickle5.dumps, protocol=pickle5.HIGHEST_PROTOCOL)
+        loads = pickle5.loads
+        try:
+            return loads(pickled_string)
+        except Exception as e2:
+            raise UnpickleError(
+                'Could not unpickle', pickled_string, e2
+            )
 
 
 def cancel_job(job_id, connection=None):

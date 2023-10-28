@@ -16,6 +16,7 @@ from rq.defaults import (DEFAULT_CONNECTION_CLASS, DEFAULT_JOB_CLASS,
 from rq.logutils import setup_loghandlers
 from rq.utils import import_attribute
 from rq.worker import WorkerStatus
+import shutil
 
 red = partial(click.style, fg='red')
 green = partial(click.style, fg='green')
@@ -105,7 +106,7 @@ def show_queues(queues, raw, by_queue, queue_class, worker_class):
         qs = queue_class.all()
 
     num_jobs = 0
-    termwidth, _ = click.get_terminal_size()
+    termwidth, _ = shutil.get_terminal_size()
     chartwidth = min(20, termwidth - 20)
 
     max_count = 0

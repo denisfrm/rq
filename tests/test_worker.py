@@ -17,8 +17,9 @@ from time import sleep
 from unittest import skipIf
 
 import pytest
-import mock
-from mock import Mock
+
+from unittest import mock
+from unittest.mock import Mock
 
 from tests import RQTestCase, slow
 from tests.fixtures import (create_file, create_file_after_timeout,
@@ -645,12 +646,14 @@ class TestWorker(RQTestCase):
         """worker.clean_registries sets last_cleaned_at and cleans registries."""
         foo_queue = Queue('foo', connection=self.testconn)
         foo_registry = StartedJobRegistry('foo', connection=self.testconn)
-        self.testconn.zadd(foo_registry.key, 1, 'foo')
+        mapping = {'foo': 1}
+        self.testconn.zadd(foo_registry.key, mapping)
         self.assertEqual(self.testconn.zcard(foo_registry.key), 1)
 
         bar_queue = Queue('bar', connection=self.testconn)
         bar_registry = StartedJobRegistry('bar', connection=self.testconn)
-        self.testconn.zadd(bar_registry.key, 1, 'bar')
+        mapping = {'bar': 1}
+        self.testconn.zadd(bar_registry.key, mapping)
         self.assertEqual(self.testconn.zcard(bar_registry.key), 1)
 
         worker = Worker([foo_queue, bar_queue])
@@ -675,7 +678,8 @@ class TestWorker(RQTestCase):
         """Worker calls clean_registries when run."""
         queue = Queue(connection=self.testconn)
         registry = StartedJobRegistry(connection=self.testconn)
-        self.testconn.zadd(registry.key, 1, 'foo')
+        mapping = {'foo': 1}
+        self.testconn.zadd(registry.key, mapping)
 
         worker = Worker(queue, connection=self.testconn)
         worker.work(burst=True)
@@ -1033,7 +1037,9 @@ class TestExceptionHandlerMessageEncoding(RQTestCase):
 
     def test_move_to_failed_queue_handles_non_ascii_in_exception_message(self):
         """Test that move_to_failed_queue doesn't crash on non-ascii in exception message."""
-        self.worker.move_to_failed_queue(Mock(), *self.exc_info)
+        job = Mock()
+        job.id = 'foo'
+        self.worker.move_to_failed_queue(job, *self.exc_info)
 
     def setUp(self):
         super(TestExceptionHandlerMessageEncoding, self).setUp()

@@ -2,7 +2,7 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import mock
+from unittest import mock
 from redis import StrictRedis
 from rq.decorators import job
 from rq.job import Job

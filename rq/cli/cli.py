@@ -55,7 +55,7 @@ shared_options = [
                  default=DEFAULT_CONNECTION_CLASS,
                  help='Redis client class to use'),
     click.option('--path', '-P',
-                 default='.',
+                 default=['.'],
                  help='Specify the import path.',
                  multiple=True)
 ]
