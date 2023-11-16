@@ -20,10 +20,6 @@ try:
 except ImportError:  # noqa  # pragma: no cover
     import pickle
 
-try:
-    import pickle5
-except ImportError:
-    import pickle as pickle5
 
 # Serialize pickle dumps using the highest pickle protocol (binary, default
 # uses ascii)
@@ -56,7 +52,13 @@ def unpickle(pickled_string):
     global loads, dumps
     try:
         return loads(pickled_string)
-    except Exception:
+    except Exception as e1:
+        import pickle5
+        warnings.warn(
+            'Could not unpickle, trying unpickle5 {} {}'.format(
+                pickled_string, e1
+            )
+        )
         dumps = partial(pickle5.dumps, protocol=pickle5.HIGHEST_PROTOCOL)
         loads = pickle5.loads
         try:

@@ -33,7 +33,8 @@ setup(
     platforms='any',
     install_requires=[
         'redis >= 2.7.0',
-        'click >= 5.0'
+        'click >= 5.0',
+        'pickle5 >= 0.0.12; python_version < "3.8"'
     ],
     python_requires='>=2.7',
     entry_points={
